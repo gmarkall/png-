@@ -31,15 +31,7 @@
 #ifndef PNGPP_ERROR_HPP_INCLUDED
 #define PNGPP_ERROR_HPP_INCLUDED
 
-/* check if we have strerror_s or strerror_r, prefer the former which is C11 std */
-#ifdef __STDC_LIB_EXT1__
-#define __STDC_WANT_LIB_EXT1__ 1
 #include <string.h>
-
-#define HAVE_STRERROR_S 1
-#else
-#undef  HAVE_STRERROR_S
-#endif
 
 #include <string>
 #include <stdexcept>
@@ -96,7 +88,8 @@ namespace png
 #define ERRBUF_SIZE 512
             char buf[ERRBUF_SIZE] = { 0 };
 
-#ifdef HAVE_STRERROR_S
+/* check if we have strerror_s or strerror_r, prefer the former which is C11 std */
+#if defined(__STDC_LIB_EXT1__) || defined(__STDC_SECURE_LIB__)
             strerror_s(buf, ERRBUF_SIZE, errnum);
             return std::string(buf);
 #else
